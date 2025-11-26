@@ -1,0 +1,9 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: 'admission_service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      # Updated target to match new docker service name (NO UNDERSCORES)
+      - targets: ['admission-service:8080']
