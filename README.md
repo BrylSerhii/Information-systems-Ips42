@@ -1,4 +1,4 @@
-# Admissions Committee System with Monitoring Stack
+Admissions Committee System with Monitoring Stack
 
 This project is a full-stack implementation of the "Admissions Committee" system, designed to automate the registration of applicants. 
 
@@ -57,8 +57,3 @@ Shows the rate of new students registering per minute.
 3. List of applicants that were creating in terminal IntelijIDEA
 <img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/035bb748-caf7-4e8c-8846-bff9782e8631" />
 
-*Automatic generation of applicant data.*
-![Data Seeder Code](./path-to-your-code-screenshot.png)
-
----
-**Author:** Serhii Bryl
