@@ -1,5 +1,6 @@
 package com.example.admission.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +18,9 @@ public class Applicant {
     @JoinColumn(name = "faculty_id")
     private Faculty faculty;
 
-    // A student has many exam scores
+    // --- FIX IS HERE: Changed (ExamScore) to <ExamScore> ---
     @OneToMany(mappedBy = "applicant", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List(ExamScore) scores = new ArrayList<>();
+    private List<ExamScore> scores = new ArrayList<>();
 
     private Double totalScore = 0.0;
     private String status = "REGISTERED"; // REGISTERED, ADMITTED, REJECTED

@@ -1,6 +1,8 @@
 package com.example.admission.controller;
 
+import com.example.admission.model.Applicant; // <--- THIS WAS LIKELY MISSING
 import com.example.admission.repository.ApplicantRepository;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,7 +17,7 @@ public class ApplicantController {
         this.repository = repository;
     }
 
-    // Visiting http://localhost:8080/applicants will trigger this
+    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/applicants")
     public List<Applicant> getAllApplicants() {
         return repository.findAll();

@@ -1,5 +1,6 @@
 version: '3.8'
 services:
+  # 1. Database
   postgres_db:
     image: postgres:15
     container_name: admission_db
@@ -10,10 +11,10 @@ services:
     ports:
       - "5432:5432"
 
-  # RENAMED from admission_app to admission-service
+  # 2. Java Backend
   admission-service:
     build: .
-    container_name: admission_app_container
+    container_name: admission_backend
     ports:
       - "8080:8080"
     depends_on:
@@ -23,6 +24,17 @@ services:
       SPRING_DATASOURCE_USERNAME: admin
       SPRING_DATASOURCE_PASSWORD: securepassword
 
+  # 3. React Frontend (NEW!)
+  frontend:
+    build: ./frontend
+    container_name: admission_frontend
+    ports:
+      - "3000:3000"
+    stdin_open: true  # Required for React to work in Docker
+    depends_on:
+      - admission-service
+
+  # 4. Monitoring (Prometheus)
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
@@ -31,11 +43,12 @@ services:
     ports:
       - "9090:9090"
 
+  # 5. Monitoring (Grafana)
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
     ports:
-      - "3000:3000"
+      - "3001:3000" # We use port 3001 because React uses 3000
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
     depends_on:

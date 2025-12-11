@@ -1,7 +1,6 @@
 package com.example.admission.model;
 
 import jakarta.persistence.*;
-import java.util.List;
 
 @Entity
 public class Faculty {
@@ -10,7 +9,7 @@ public class Faculty {
     private Long id;
 
     private String name;
-    private Integer budgetQuota; // The "Plan" (e.g., 10 places)
+    private Integer budgetQuota;
 
     public Faculty() {}
 
@@ -19,7 +18,9 @@ public class Faculty {
         this.budgetQuota = budgetQuota;
     }
 
-    // Getters
+    // --- ADDED MISSING GETTER ---
+    public Long getId() { return id; }
+
     public String getName() { return name; }
     public Integer getBudgetQuota() { return budgetQuota; }
 }

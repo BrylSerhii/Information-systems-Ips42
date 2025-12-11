@@ -1,34 +1,49 @@
 package com.example.admission.service;
 
+import com.example.admission.model.Applicant;
+import com.example.admission.model.ExamScore;
+import com.example.admission.model.Faculty;
 import com.example.admission.repository.ApplicantRepository;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
+import com.example.admission.repository.FacultyRepository;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.util.Random;
 
 @Component
-@EnableScheduling
-public class DataSeeder {
+public class DataSeeder implements CommandLineRunner {
 
-    private final ApplicantRepository repository;
-    private final Random random = new Random();
-    private final String[] faculties = {"CS", "Economics", "Law", "Physics", "Arts"};
+    private final FacultyRepository facultyRepo;
+    private final ApplicantRepository applicantRepo;
+    private final AdmissionService admissionService;
 
-    public DataSeeder(ApplicantRepository repository) {
-        this.repository = repository;
+    public DataSeeder(FacultyRepository facultyRepo, ApplicantRepository applicantRepo, AdmissionService admissionService) {
+        this.facultyRepo = facultyRepo;
+        this.applicantRepo = applicantRepo;
+        this.admissionService = admissionService;
     }
 
-    // Runs every 5 seconds to add data
-    @Scheduled(fixedRate = 5000)
-    public void generateStudent() {
-        String faculty = faculties[random.nextInt(faculties.length)];
-        double score = 120 + (80 * random.nextDouble());
-        String name = "Student_" + random.nextInt(10000);
+    @Override
+    public void run(String... args) throws Exception {
+        if (facultyRepo.count() > 0) return;
 
-        Applicant s = new Applicant(name, faculty, score);
-        repository.save(s);
+        Faculty cs = facultyRepo.save(new Faculty("Computer Science", 5));
+        Faculty law = facultyRepo.save(new Faculty("Law", 3));
 
-        System.out.println(">>> Added: " + name);
+        Random rand = new Random();
+        for (int i = 0; i < 20; i++) {
+            Faculty targetFaculty = (i % 2 == 0) ? cs : law;
+            Applicant app = new Applicant("Student " + i, targetFaculty);
+
+            app.addScore(new ExamScore("Math", 100 + rand.nextDouble() * 100));
+            app.addScore(new ExamScore("History", 100 + rand.nextDouble() * 100));
+
+            applicantRepo.save(app);
+        }
+
+        System.out.println(">>> Calculating Admission Results...");
+        admissionService.runAdmissionProcess(cs.getId());  // Now this will work!
+        admissionService.runAdmissionProcess(law.getId()); // This too!
+        System.out.println(">>> Done! Check the database.");
     }
 }
