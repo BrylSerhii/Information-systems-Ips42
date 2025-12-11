@@ -1,6 +1,5 @@
 package com.example.admission.service;
 
-import com.example.admission.model.Applicant;
 import com.example.admission.repository.ApplicantRepository;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;

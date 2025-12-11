@@ -1,6 +1,5 @@
 package com.example.admission.controller;
 
-import com.example.admission.model.Applicant;
 import com.example.admission.repository.ApplicantRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

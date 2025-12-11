@@ -1,33 +1,52 @@
 package com.example.admission.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Table(name = "applicants")
 public class Applicant {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String fullName;
-    private String facultyName;
-    private Double totalScore;
+    private String email;
 
-    private LocalDateTime registeredAt;
+    @ManyToOne
+    @JoinColumn(name = "faculty_id")
+    private Faculty faculty;
+
+    // A student has many exam scores
+    @OneToMany(mappedBy = "applicant", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List(ExamScore) scores = new ArrayList<>();
+
+    private Double totalScore = 0.0;
+    private String status = "REGISTERED"; // REGISTERED, ADMITTED, REJECTED
 
     public Applicant() {}
 
-    public Applicant(String fullName, String facultyName, Double totalScore) {
+    public Applicant(String fullName, Faculty faculty) {
         this.fullName = fullName;
-        this.facultyName = facultyName;
-        this.totalScore = totalScore;
-        this.registeredAt = LocalDateTime.now();
+        this.faculty = faculty;
     }
 
-    // Getters are required for the API to return JSON
+    public void addScore(ExamScore score) {
+        scores.add(score);
+        score.setApplicant(this);
+        recalculateTotal();
+    }
+
+    public void recalculateTotal() {
+        this.totalScore = scores.stream().mapToDouble(ExamScore::getScore).sum();
+    }
+
+    // Getters and Setters
+    public Long getId() { return id; }
     public String getFullName() { return fullName; }
-    public String getFacultyName() { return facultyName; }
+    public Faculty getFaculty() { return faculty; }
     public Double getTotalScore() { return totalScore; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+    public List<ExamScore> getScores() { return scores; }
 }
