@@ -47,12 +47,24 @@ Shows the rate of new students registering per minute.
 <img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/035bb748-caf7-4e8c-8846-bff9782e8631" />
 
 4. Home page
-<img width="1910" height="868" alt="image" src="https://github.com/user-attachments/assets/28bf8469-6373-4cba-b4df-79a349d205f3" />
+<img width="1918" height="965" alt="image" src="https://github.com/user-attachments/assets/376cf7c7-2761-4e61-a217-625862d3ba4d" />
+
 
 5. Faculties page
-<img width="1916" height="973" alt="image" src="https://github.com/user-attachments/assets/e870764e-bed4-4ee3-8752-d8951a1b3091" />
+<img width="1919" height="976" alt="image" src="https://github.com/user-attachments/assets/204c1e0d-0c61-42a7-9ad6-ceddb4c8c0ab" />
+
 
 6. Results page
-<img width="1910" height="975" alt="image" src="https://github.com/user-attachments/assets/79850f10-0311-4ccd-8463-80cc6affc751" />
+<img width="1916" height="969" alt="image" src="https://github.com/user-attachments/assets/85a927bf-7b8b-43c2-a9cb-8e70e5d255f3" />
 
+7. Login/register page
+<img width="1919" height="873" alt="image" src="https://github.com/user-attachments/assets/e7e2661a-2cc7-4d9a-ae6c-2d161ef60266" />
 
+8. Apply for admission 
+<img width="1919" height="969" alt="image" src="https://github.com/user-attachments/assets/22afb245-4b66-4d99-b9d2-44c080e45ab6" />
+
+9. Application received
+<img width="1919" height="972" alt="image" src="https://github.com/user-attachments/assets/fc9f7a44-13ff-4d03-aa23-479dc9f356fd" />
+
+10. Results list with new user Serhii Bryl
+<img width="1426" height="853" alt="image" src="https://github.com/user-attachments/assets/b7092c12-b05b-4304-ae45-be18cb4119ba" />
