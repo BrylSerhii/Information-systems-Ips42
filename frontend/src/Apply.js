@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Modal from './Modal'; // Import the new component
+import Modal from './Modal';
 
 function Apply() {
     const [fullName, setFullName] = useState('');
@@ -41,7 +41,7 @@ function Apply() {
                     isSuccess: true
                 });
                 setShowModal(true);
-                setFullName(''); // Clear form
+                setFullName('');
             } else {
                 throw new Error('Server rejected request');
             }
@@ -58,7 +58,7 @@ function Apply() {
     const closeModal = () => {
         setShowModal(false);
         if (modalContent.isSuccess) {
-            window.location.href = '/results'; // Redirect only on success
+            window.location.href = '/results';
         }
     };
 
@@ -125,7 +125,7 @@ const inputStyle = {
     borderRadius: "6px",
     border: "1px solid #ddd",
     fontSize: "1rem",
-    boxSizing: "border-box" // Prevents padding from breaking layout
+    boxSizing: "border-box"
 };
 
 const submitButtonStyle = {

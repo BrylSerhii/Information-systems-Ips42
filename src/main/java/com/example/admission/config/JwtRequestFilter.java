@@ -32,9 +32,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String username = null;
         String jwt = null;
 
-        // 1. Check if the request has a "Bearer " token
+
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            jwt = authorizationHeader.substring(7); // Remove "Bearer " prefix
+            jwt = authorizationHeader.substring(7);
             try {
                 username = jwtUtil.extractUsername(jwt);
             } catch (Exception e) {
@@ -42,16 +42,15 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
         }
 
-        // 2. If we found a username and they aren't logged in yet...
+
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            // In a real app, you'd load UserDetails from DB here.
-            // For simplicity, we trust the token if it parses correctly.
+
             if (jwtUtil.validateToken(jwt, username)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         username, null, new ArrayList<>()); // Empty authorities list
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                // 3. LOG THEM IN MANUALLY
+
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }

@@ -11,7 +11,7 @@ import java.util.List;
 @Configuration
 public class SecurityConfig {
 
-    private final JwtRequestFilter jwtRequestFilter; // Inject the filter
+    private final JwtRequestFilter jwtRequestFilter;
 
     public SecurityConfig(JwtRequestFilter jwtRequestFilter) {
         this.jwtRequestFilter = jwtRequestFilter;
@@ -32,12 +32,10 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**", "/faculties", "/applicants").permitAll()
                         .anyRequest().authenticated()
                 )
-                // ADD THE FILTER BEFORE THE STANDARD AUTH FILTER
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
-    // ... keep the passwordEncoder bean ...
     @Bean
     public org.springframework.security.crypto.password.PasswordEncoder passwordEncoder() {
         return new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder();

@@ -41,7 +41,6 @@ public class Applicant {
         this.totalScore = scores.stream().mapToDouble(ExamScore::getScore).sum();
     }
 
-    // Getters and Setters
     public Long getId() { return id; }
     public String getFullName() { return fullName; }
     public Faculty getFaculty() { return faculty; }

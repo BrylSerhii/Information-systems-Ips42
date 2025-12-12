@@ -23,7 +23,6 @@ public class JwtUtil {
                 .compact();
     }
 
-    // --- NEW METHODS START HERE ---
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
