@@ -5,6 +5,8 @@ import Navbar from './Navbar';
 import Home from './Home';
 import Faculties from './Faculties';
 import Results from './Results';
+import Login from './Login';
+import Apply from './Apply';
 
 function App() {
     return (
@@ -15,6 +17,8 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/faculties" element={<Faculties />} />
                     <Route path="/results" element={<Results />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/apply" element={<Apply />} />
                 </Routes>
             </div>
         </Router>
