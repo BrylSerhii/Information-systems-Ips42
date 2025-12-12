@@ -6,6 +6,7 @@ Beyond the core business logic, the project focuses heavily on DevOps infrastruc
 
 Technology Stack
 
+Frontend: React JavaScript
 Language:Java 17
 FrameworkSpring Boot 3 (Web, Data JPA, Actuator)
 Database: PostgreSQL 15
@@ -13,18 +14,6 @@ Monitoring: Prometheus (Time Series DB)
 Visualization: Grafana
 Containerization: Docker & Docker Compose
 
-Implementation of Technical Requirements
-
-Below is a summary of how I met the technical task requirements, including architectural decisions I made during development.
-
-
-DBMS Launch✅ Done  I launched PostgreSQL in a Docker container (`postgres_db`) connected via a custom bridge network.
-Data Generation ✅ Done  Instead of using an external Python script, I implemented a robust Java `DataSeeder` service**. It utilizes Spring's `@Scheduled` annotation to automatically generate and insert new student applicants every 5 seconds, simulating live traffic.
-Data Collection✅ Done I configured Spring Boot Actuator and Micrometer to expose application metrics. Prometheus scrapes these metrics every 5 seconds via the `prometheus.yml` configuration. |
-Time Series Storage✅ Done |Data is stored persistently within the Prometheus internal Time Series Database (TSDB). |
-Visualization ✅ Done  I set up Grafana to visualize the data. The dashboard includes real-time graphs for "Student Registration Rate" (Business Metric) and JVM Health (Technical Metric). |
-Authorization ✅ Done  For the monitoring system, I utilized Grafana's built-in Authentication (Admin/Admin) to ensure access is restricted to authorized users only. |
-Containerization ✅ Done  The entire stack (Java App, Postgres, Prometheus, Grafana) is orchestrated using a single `docker-compose.yml` file. 
 
 How to Run the Project
 
@@ -56,4 +45,14 @@ Shows the rate of new students registering per minute.
 
 3. List of applicants that were creating in terminal IntelijIDEA
 <img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/035bb748-caf7-4e8c-8846-bff9782e8631" />
+
+4. Home page
+<img width="1910" height="868" alt="image" src="https://github.com/user-attachments/assets/28bf8469-6373-4cba-b4df-79a349d205f3" />
+
+5. Faculties page
+<img width="1916" height="973" alt="image" src="https://github.com/user-attachments/assets/e870764e-bed4-4ee3-8752-d8951a1b3091" />
+
+6. Results page
+<img width="1910" height="975" alt="image" src="https://github.com/user-attachments/assets/79850f10-0311-4ccd-8463-80cc6affc751" />
+
 
