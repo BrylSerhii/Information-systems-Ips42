@@ -18,7 +18,6 @@ public class Applicant {
     @JoinColumn(name = "faculty_id")
     private Faculty faculty;
 
-    // --- FIX IS HERE: Changed (ExamScore) to <ExamScore> ---
     @OneToMany(mappedBy = "applicant", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<ExamScore> scores = new ArrayList<>();
 

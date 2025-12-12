@@ -18,7 +18,6 @@ public class Faculty {
         this.budgetQuota = budgetQuota;
     }
 
-    // --- ADDED MISSING GETTER ---
     public Long getId() { return id; }
 
     public String getName() { return name; }
