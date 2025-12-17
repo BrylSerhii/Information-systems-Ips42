@@ -30,7 +30,7 @@ public class AuthController {
         return ResponseEntity.ok(savedUser); // <--- ВАЖЛИВО: Повертаємо об'єкт з ID!
     }
 
-    // ВХІД (Новий метод для логіну)
+    // ВХІД
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody User loginRequest) {
         Optional<User> userOptional = userRepository.findByUsername(loginRequest.getUsername());

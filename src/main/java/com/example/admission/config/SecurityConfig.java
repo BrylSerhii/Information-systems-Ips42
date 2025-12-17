@@ -24,11 +24,11 @@ public class SecurityConfig {
                     return corsConfiguration;
                 }))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()       // Вхід і реєстрація
-                        .requestMatchers("/faculties/**").permitAll()  // Список факультетів
-                        .requestMatchers("/applicants/**").permitAll() // <--- ОСЬ ЦЬОГО НЕ ВИСТАЧАЛО!
-                        .requestMatchers("/actuator/**").permitAll()   // Моніторинг Prometheus
-                        .anyRequest().authenticated()                  // Все інше закрито
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/faculties/**").permitAll()
+                        .requestMatchers("/applicants/**").permitAll()
+                        .requestMatchers("/actuator/**").permitAll()
+                        .anyRequest().authenticated()
                 );
 
         return http.build();

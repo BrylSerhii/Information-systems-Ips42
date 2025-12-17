@@ -1,6 +1,5 @@
 package com.example.admission.controller;
 
-// 👇 ОСЬ ЦІ ІМПОРТИ ВИПРАВЛЯТЬ ЧЕРВОНІ ПОМИЛКИ 👇
 import com.example.admission.dto.ApplicantRequest;
 import com.example.admission.model.*;
 import com.example.admission.repository.*;
@@ -33,7 +32,7 @@ public class ApplicantController {
         return applicantRepository.findAll();
     }
 
-    // Подати нову заявку (З РУЧНИМ ВВЕДЕННЯМ БАЛІВ)
+    // Подати нову заявку
     @PostMapping
     public ResponseEntity<?> applyForRegistration(@RequestBody ApplicantRequest request) {
 

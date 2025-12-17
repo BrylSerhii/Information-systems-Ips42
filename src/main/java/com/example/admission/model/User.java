@@ -1,6 +1,6 @@
 package com.example.admission.model;
 
-import jakarta.persistence.*; // Якщо стара версія Java, то javax.persistence.*
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "users")
@@ -31,7 +31,6 @@ public class User {
         return id;
     }
 
-    // 👇 ОСЬ ЦЬОГО МЕТОДУ НЕ ВИСТАЧАЛО ДЛЯ ТЕСТІВ 👇
     public void setId(Long id) {
         this.id = id;
     }

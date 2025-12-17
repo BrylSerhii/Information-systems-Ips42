@@ -1,6 +1,6 @@
 package com.example.admission.model;
 
-import jakarta.persistence.*; // Якщо не працює, спробуйте javax.persistence.*
+import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity

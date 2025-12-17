@@ -1,6 +1,6 @@
 package com.example.admission.model;
 
-import jakarta.persistence.*; // Якщо не працює, спробуйте javax.persistence.*
+import jakarta.persistence.*;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -14,7 +14,6 @@ public class Faculty {
 
     private String name;
 
-    // 👇 НОВІ ПОЛЯ, ЯКИХ НЕ ВИСТАЧАЛО 👇
     private int budgetSeats;   // Бюджетні місця
     private int contractSeats; // Контрактні місця
 
@@ -51,7 +50,6 @@ public class Faculty {
         this.name = name;
     }
 
-    // 👇 Геттери для місць (виправлять помилку "Cannot resolve method")
     public int getBudgetSeats() {
         return budgetSeats;
     }
@@ -66,7 +64,7 @@ public class Faculty {
 
     public void setContractSeats(int contractSeats) {
         this.contractSeats = contractSeats;
-    }   
+    }
     @JsonIgnore
     public List<Applicant> getApplicants() {
         return applicants;

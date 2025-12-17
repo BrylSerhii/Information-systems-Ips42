@@ -40,7 +40,6 @@ public class AdmissionService {
                 Applicant app = applicants.get(i);
 
                 if (i < capacity) {
-                    // 👇 ВИПРАВЛЕНО: Використовуємо Enum, а не String
                     app.setStatus(ApplicantStatus.ADMITTED);
                 } else {
                     app.setStatus(ApplicantStatus.REJECTED);

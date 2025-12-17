@@ -20,12 +20,10 @@ services:
       - "8080:8080" # Сайт (з логіном)
       - "8081:8081" # Метрики (без логіна)
     environment:
-      # ВИПРАВЛЕНО: хост змінено з 'db' на 'postgres_db'
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_db:5432/admission_system
       - SPRING_DATASOURCE_USERNAME=admin
       - SPRING_DATASOURCE_PASSWORD=securepassword
     depends_on:
-      # ВИПРАВЛЕНО: тепер чекаємо на 'postgres_db'
       - postgres_db
 
   # 3. React Frontend
