@@ -7,11 +7,17 @@ Beyond the core business logic, the project focuses heavily on DevOps infrastruc
 Technology Stack
 
 Frontend: React JavaScript
-Language:Java 17
+
+Backend: Java 17
+
 FrameworkSpring Boot 3 (Web, Data JPA, Actuator)
+
 Database: PostgreSQL 15
+
 Monitoring: Prometheus (Time Series DB)
+
 Visualization: Grafana
+
 Containerization: Docker & Docker Compose
 
 
