@@ -10,27 +10,31 @@ services:
       POSTGRES_PASSWORD: securepassword
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   # 2. Java Backend
   admission-service:
     build: .
-    container_name: admission_backend
     ports:
-      - "8080:8080"
-    depends_on:
-      - postgres_db
+      - "8080:8080" # Сайт (з логіном)
+      - "8081:8081" # Метрики (без логіна)
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_db:5432/admission_system
-      SPRING_DATASOURCE_USERNAME: admin
-      SPRING_DATASOURCE_PASSWORD: securepassword
+      # ВИПРАВЛЕНО: хост змінено з 'db' на 'postgres_db'
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_db:5432/admission_system
+      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_PASSWORD=securepassword
+    depends_on:
+      # ВИПРАВЛЕНО: тепер чекаємо на 'postgres_db'
+      - postgres_db
 
-  # 3. React Frontend (NEW!)
+  # 3. React Frontend
   frontend:
     build: ./frontend
     container_name: admission_frontend
     ports:
       - "3000:3000"
-    stdin_open: true  # Required for React to work in Docker
+    stdin_open: true
     depends_on:
       - admission-service
 
@@ -40,16 +44,25 @@ services:
     container_name: prometheus
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
     ports:
       - "9090:9090"
+
 
   # 5. Monitoring (Grafana)
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
     ports:
-      - "3001:3000" # We use port 3001 because React uses 3000
+      - "3001:3000" # Grafana буде доступна на порту 3001
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
     depends_on:
       - prometheus
+    volumes:
+      - grafana_data:/var/lib/grafana
+
+volumes:
+  grafana_data: # <--- Оголошуємо том
+  prometheus_data:
+  postgres_data:

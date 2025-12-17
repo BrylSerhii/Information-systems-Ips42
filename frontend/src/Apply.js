@@ -1,144 +1,141 @@
-import React, { useState } from 'react';
-import Modal from './Modal';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-function Apply() {
-    const [fullName, setFullName] = useState('');
-    const [facultyId, setFacultyId] = useState('1');
+const Apply = () => {
+    const navigate = useNavigate();
+    const [faculties, setFaculties] = useState([]);
+    const [selectedFaculty, setSelectedFaculty] = useState('');
 
-    // Modal State
-    const [showModal, setShowModal] = useState(false);
-    const [modalContent, setModalContent] = useState({ title: '', message: '', isSuccess: true });
+    // Стан для балів
+    const [scores, setScores] = useState({
+        math: '',
+        english: '',
+        physics: ''
+    });
+
+    // Завантаження списку факультетів при відкритті сторінки
+    useEffect(() => {
+        fetch('http://localhost:8080/faculties')
+            .then(res => res.json())
+            .then(data => setFaculties(data))
+            .catch(err => console.error("Error loading faculties:", err));
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const token = localStorage.getItem('token');
 
-        if (!token) {
-            setModalContent({
-                title: 'Access Denied',
-                message: 'You must log in before applying!',
-                isSuccess: false
-            });
-            setShowModal(true);
+        // Отримуємо поточного користувача з localStorage
+        const userString = localStorage.getItem('user');
+        if (!userString) {
+            alert("Будь ласка, увійдіть у систему спочатку!");
+            navigate('/login');
             return;
         }
+        const user = JSON.parse(userString);
+
+        // Формуємо правильний JSON для бекенду
+        const payload = {
+            userId: user.id,
+            facultyId: selectedFaculty,
+            mathScore: parseFloat(scores.math),
+            englishScore: parseFloat(scores.english),
+            physicsScore: parseFloat(scores.physics)
+        };
 
         try {
-            const response = await fetch('http://localhost:8080/applicants/apply', {
+            const response = await fetch('http://localhost:8080/applicants', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    // Якщо у вас є JWT токен, розкоментуйте рядок нижче:
+                    // 'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
-                body: JSON.stringify({ fullName, facultyId }),
+                body: JSON.stringify(payload),
             });
 
             if (response.ok) {
-                // Success! Show the Pop-up
-                setModalContent({
-                    title: 'Application Received!',
-                    message: `Success! ${fullName} has been registered for the entrance exams.`,
-                    isSuccess: true
-                });
-                setShowModal(true);
-                setFullName('');
+                alert('Заявку успішно подано! Ваші бали збережено.');
+                navigate('/'); // Повертаємось на головну
             } else {
-                throw new Error('Server rejected request');
+                alert('Помилка при подачі заявки. Перевірте дані.');
             }
         } catch (error) {
-            setModalContent({
-                title: 'Error',
-                message: 'Something went wrong. Please try again.',
-                isSuccess: false
-            });
-            setShowModal(true);
-        }
-    };
-
-    const closeModal = () => {
-        setShowModal(false);
-        if (modalContent.isSuccess) {
-            window.location.href = '/results';
+            console.error('Помилка:', error);
+            alert('Сервер не відповідає.');
         }
     };
 
     return (
-        <div style={{ padding: "40px", maxWidth: "500px", margin: "0 auto" }}>
-            {/* The Pop-up Component */}
-            <Modal
-                show={showModal}
-                title={modalContent.title}
-                message={modalContent.message}
-                isSuccess={modalContent.isSuccess}
-                onClose={closeModal}
-            />
+        <div className="container mt-5" style={{ maxWidth: '600px' }}>
+            <div className="card shadow p-4">
+                <h2 className="text-center mb-4">Подача документів</h2>
+                <form onSubmit={handleSubmit}>
 
-            <h2 style={{ textAlign: "center", marginBottom: "30px" }}>📝 Apply for Admission</h2>
+                    {/* Вибір факультету */}
+                    <div className="mb-3">
+                        <label className="form-label fw-bold">Оберіть факультет:</label>
+                        <select
+                            className="form-select"
+                            onChange={e => setSelectedFaculty(e.target.value)}
+                            required
+                        >
+                            <option value="">-- Оберіть зі списку --</option>
+                            {faculties.map(f => (
+                                <option key={f.id} value={f.id}>
+                                    {f.name} (Бюджет: {f.budgetSeats}, Контракт: {f.contractSeats})
+                                </option>
+                            ))}
+                        </select>
+                    </div>
 
-            <form onSubmit={handleSubmit} style={formStyle}>
-                <div style={{ marginBottom: "20px" }}>
-                    <label style={labelStyle}>Full Name</label>
-                    <input
-                        type="text"
-                        value={fullName}
-                        onChange={e => setFullName(e.target.value)}
-                        required
-                        style={inputStyle}
-                        placeholder="e.g. John Smith"
-                    />
-                </div>
-                <div style={{ marginBottom: "20px" }}>
-                    <label style={labelStyle}>Select Faculty</label>
-                    <select
-                        value={facultyId}
-                        onChange={e => setFacultyId(e.target.value)}
-                        style={inputStyle}
-                    >
-                        <option value="1">Computer Science</option>
-                        <option value="2">Law</option>
-                    </select>
-                </div>
-                <button type="submit" style={submitButtonStyle}>Submit Application</button>
-            </form>
+                    <hr />
+
+                    {/* Введення балів */}
+                    <h5 className="mb-3 text-primary">Введіть бали ЗНО (100-200):</h5>
+
+                    <div className="mb-3">
+                        <label className="form-label">Математика</label>
+                        <input
+                            type="number" className="form-control"
+                            min="100" max="200" step="0.1"
+                            placeholder="Наприклад: 185.5"
+                            value={scores.math}
+                            onChange={e => setScores({...scores, math: e.target.value})}
+                            required
+                        />
+                    </div>
+
+                    <div className="mb-3">
+                        <label className="form-label">Англійська мова</label>
+                        <input
+                            type="number" className="form-control"
+                            min="100" max="200" step="0.1"
+                            placeholder="Наприклад: 170"
+                            value={scores.english}
+                            onChange={e => setScores({...scores, english: e.target.value})}
+                            required
+                        />
+                    </div>
+
+                    <div className="mb-3">
+                        <label className="form-label">Фізика</label>
+                        <input
+                            type="number" className="form-control"
+                            min="100" max="200" step="0.1"
+                            placeholder="Наприклад: 160"
+                            value={scores.physics}
+                            onChange={e => setScores({...scores, physics: e.target.value})}
+                            required
+                        />
+                    </div>
+
+                    <button type="submit" className="btn btn-success w-100 mt-3">
+                        Подати заявку
+                    </button>
+                </form>
+            </div>
         </div>
     );
-}
-
-// Styles for the Form
-const formStyle = {
-    backgroundColor: "#f9f9f9",
-    padding: "30px",
-    borderRadius: "10px",
-    boxShadow: "0 2px 10px rgba(0,0,0,0.1)"
-};
-
-const labelStyle = {
-    display: "block",
-    marginBottom: "8px",
-    fontWeight: "bold",
-    color: "#34495e"
-};
-
-const inputStyle = {
-    width: "100%",
-    padding: "12px",
-    borderRadius: "6px",
-    border: "1px solid #ddd",
-    fontSize: "1rem",
-    boxSizing: "border-box"
-};
-
-const submitButtonStyle = {
-    width: "100%",
-    padding: "12px",
-    backgroundColor: "#27ae60",
-    color: "white",
-    border: "none",
-    borderRadius: "6px",
-    fontSize: "1.1rem",
-    fontWeight: "bold",
-    cursor: "pointer",
-    marginTop: "10px"
 };
 
 export default Apply;

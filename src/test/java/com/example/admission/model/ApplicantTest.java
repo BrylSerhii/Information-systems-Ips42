@@ -7,35 +7,38 @@ class ApplicantTest {
 
     @Test
     void shouldCalculateTotalScoreCorrectly() {
-        // 1. Arrange
-        Applicant student = new Applicant("John Doe", null);
+        // GIVEN
+        // Створюємо заявку через порожній конструктор
+        Applicant applicant = new Applicant();
 
-        // 2. Act: Add two scores
-        student.addScore(new ExamScore("Math", 90.0));
-        student.addScore(new ExamScore("History", 80.5));
+        // Додаємо бали (Math: 150, English: 160)
+        applicant.addScore(new ExamScore("Mathematics", 150.0));
+        applicant.addScore(new ExamScore("English", 160.0));
 
-        // 3. Assert: 90 + 80.5 should be 170.5
-        assertEquals(170.5, student.getTotalScore(), 0.001);
+        // WHEN
+        // Рахуємо суму
+        double totalScore = applicant.getTotalScore();
+
+        // THEN
+        // Очікуємо 310.0
+        assertEquals(310.0, totalScore, "Total score should be sum of all exams");
     }
 
     @Test
-    void shouldInitializeWithZeroScore() {
-        Applicant student = new Applicant("Jane Doe", null);
-        assertEquals(0.0, student.getTotalScore());
-    }
+    void shouldLinkScoreToApplicantWhenAdding() {
+        // GIVEN
+        Applicant applicant = new Applicant();
+        ExamScore score = new ExamScore("Physics", 180.0);
 
-    @Test
-    void shouldLinkScoreToApplicant() {
-        // Verify the bidirectional relationship
-        Applicant student = new Applicant("Test Student", null);
-        ExamScore score = new ExamScore("Physics", 100.0);
+        // WHEN
+        // Викликаємо наш метод addScore
+        applicant.addScore(score);
 
-        student.addScore(score);
+        // THEN
+        // 1. Перевіряємо, що бал є у списку
+        assertTrue(applicant.getScores().contains(score));
 
-        // The score object should now know who it belongs to
-        // (This relies on the logic inside your addScore method)
-        // Note: You might need to add a getApplicant() getter to ExamScore to test this,
-        // but checking the list size is good enough for now.
-        assertEquals(1, student.getScores().size());
+        // 2. Перевіряємо зворотній зв'язок (що бал знає, чий він)
+        assertEquals(applicant, score.getApplicant(), "Score should be linked to the applicant");
     }
 }

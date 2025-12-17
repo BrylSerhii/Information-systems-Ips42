@@ -1,6 +1,7 @@
 package com.example.admission.service;
 
 import com.example.admission.model.Applicant;
+import com.example.admission.model.ApplicantStatus; // <--- Важливий імпорт
 import com.example.admission.model.Faculty;
 import com.example.admission.repository.ApplicantRepository;
 import com.example.admission.repository.FacultyRepository;
@@ -13,39 +14,40 @@ import java.util.List;
 @Service
 public class AdmissionService {
 
-    private final ApplicantRepository applicantRepo;
-    private final FacultyRepository facultyRepo;
+    private final ApplicantRepository applicantRepository;
+    private final FacultyRepository facultyRepository;
 
-    public AdmissionService(ApplicantRepository applicantRepo, FacultyRepository facultyRepo) {
-        this.applicantRepo = applicantRepo;
-        this.facultyRepo = facultyRepo;
+    public AdmissionService(ApplicantRepository applicantRepository, FacultyRepository facultyRepository) {
+        this.applicantRepository = applicantRepository;
+        this.facultyRepository = facultyRepository;
     }
 
-    /**
-     * The Main Algorithm:
-     * 1. Get all students for a faculty.
-     * 2. Sort them by Total Score (Highest first).
-     * 3. The top N students (where N is Quota) get "ADMITTED".
-     * 4. The rest get "REJECTED".
-     */
     @Transactional
-    public void runAdmissionProcess(Long facultyId) {
-        Faculty faculty = facultyRepo.findById(facultyId).orElseThrow();
-        List<Applicant> applicants = applicantRepo.findByFacultyId(facultyId);
+    public void processAdmissions() {
+        List<Faculty> faculties = facultyRepository.findAll();
 
-        // Sort: High score -> Low score
-        applicants.sort(Comparator.comparingDouble(Applicant::getTotalScore).reversed());
+        for (Faculty faculty : faculties) {
+            // 1. Беремо всіх, хто подав заявку на цей факультет
+            List<Applicant> applicants = applicantRepository.findByFacultyId(faculty.getId());
 
-        int quota = faculty.getBudgetQuota();
+            // 2. Сортуємо їх за балами (від найбільшого до найменшого)
+            applicants.sort(Comparator.comparingDouble(Applicant::getTotalScore).reversed());
 
-        for (int i = 0; i < applicants.size(); i++) {
-            Applicant app = applicants.get(i);
-            if (i < quota) {
-                app.setStatus("ADMITTED");
-            } else {
-                app.setStatus("REJECTED");
+            // 3. Зараховуємо найкращих
+            int capacity = faculty.getBudgetSeats() + faculty.getContractSeats();
+
+            for (int i = 0; i < applicants.size(); i++) {
+                Applicant app = applicants.get(i);
+
+                if (i < capacity) {
+                    // 👇 ВИПРАВЛЕНО: Використовуємо Enum, а не String
+                    app.setStatus(ApplicantStatus.ADMITTED);
+                } else {
+                    app.setStatus(ApplicantStatus.REJECTED);
+                }
+
+                applicantRepository.save(app);
             }
-            applicantRepo.save(app);
         }
     }
 }

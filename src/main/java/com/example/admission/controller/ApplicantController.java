@@ -1,46 +1,67 @@
 package com.example.admission.controller;
 
-import com.example.admission.model.Applicant;
-import com.example.admission.model.ExamScore;
-import com.example.admission.model.Faculty;
-import com.example.admission.repository.ApplicantRepository;
-import com.example.admission.repository.FacultyRepository;
+// 👇 ОСЬ ЦІ ІМПОРТИ ВИПРАВЛЯТЬ ЧЕРВОНІ ПОМИЛКИ 👇
+import com.example.admission.dto.ApplicantRequest;
+import com.example.admission.model.*;
+import com.example.admission.repository.*;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
+@RequestMapping("/applicants")
 public class ApplicantController {
 
     private final ApplicantRepository applicantRepository;
     private final FacultyRepository facultyRepository;
+    private final UserRepository userRepository;
 
-    public ApplicantController(ApplicantRepository applicantRepository, FacultyRepository facultyRepository) {
+    // Конструктор
+    public ApplicantController(ApplicantRepository applicantRepository,
+                               FacultyRepository facultyRepository,
+                               UserRepository userRepository) {
         this.applicantRepository = applicantRepository;
         this.facultyRepository = facultyRepository;
+        this.userRepository = userRepository;
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
-    @GetMapping("/applicants")
+    // Отримати список всіх заявок
+    @GetMapping
     public List<Applicant> getAllApplicants() {
         return applicantRepository.findAll();
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
-    @PostMapping("/applicants/apply")
-    public Applicant applyForRegistration(@RequestBody Map<String, String> payload) {
-        String name = payload.get("fullName");
-        Long facultyId = Long.parseLong(payload.get("facultyId"));
+    // Подати нову заявку (З РУЧНИМ ВВЕДЕННЯМ БАЛІВ)
+    @PostMapping
+    public ResponseEntity<?> applyForRegistration(@RequestBody ApplicantRequest request) {
 
-        Faculty faculty = facultyRepository.findById(facultyId)
-                .orElseThrow(() -> new RuntimeException("Faculty not found with ID: " + facultyId));
+        // 1. Шукаємо користувача
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + request.getUserId()));
 
-        Applicant newApp = new Applicant(name, faculty);
+        // 2. Шукаємо факультет
+        Faculty faculty = facultyRepository.findById(request.getFacultyId())
+                .orElseThrow(() -> new RuntimeException("Faculty not found with ID: " + request.getFacultyId()));
 
-        newApp.addScore(new ExamScore("Math", Math.random() * 100 + 100));
-        newApp.addScore(new ExamScore("History", Math.random() * 100 + 100));
+        // 3. Створюємо заявку
+        Applicant applicant = new Applicant();
+        applicant.setUser(user);
+        applicant.setFaculty(faculty);
 
-        return applicantRepository.save(newApp);
+        // Встановлюємо статус (переконайтеся, що ApplicantStatus імпортовано)
+        applicant.setStatus(ApplicantStatus.APPLIED);
+
+        // 4. ВСТАНОВЛЮЄМО БАЛИ
+        // Беремо числа, які прийшли з фронтенду
+        applicant.addScore(new ExamScore("Mathematics", request.getMathScore()));
+        applicant.addScore(new ExamScore("English", request.getEnglishScore()));
+        applicant.addScore(new ExamScore("Physics", request.getPhysicsScore()));
+
+        // 5. Зберігаємо в базу
+        applicantRepository.save(applicant);
+
+        return ResponseEntity.ok("Application submitted successfully!");
     }
 }

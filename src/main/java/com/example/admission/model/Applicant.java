@@ -1,51 +1,54 @@
 package com.example.admission.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "applicants")
 public class Applicant {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String fullName;
-    private String email;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "faculty_id")
     private Faculty faculty;
 
-    @OneToMany(mappedBy = "applicant", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<ExamScore> scores = new ArrayList<>();
+    @Enumerated(EnumType.STRING)
+    private ApplicantStatus status;
 
-    private Double totalScore = 0.0;
-    private String status = "REGISTERED"; // REGISTERED, ADMITTED, REJECTED
+    @OneToMany(mappedBy = "applicant", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ExamScore> scores = new ArrayList<>();
 
     public Applicant() {}
 
-    public Applicant(String fullName, Faculty faculty) {
-        this.fullName = fullName;
-        this.faculty = faculty;
-    }
+    // Геттери та Сеттери
+    public Long getId() { return id; }
+
+    public void setUser(User user) { this.user = user; }
+    public User getUser() { return user; }
+
+    public void setFaculty(Faculty faculty) { this.faculty = faculty; }
+    public Faculty getFaculty() { return faculty; }
+
+    public void setStatus(ApplicantStatus status) { this.status = status; }
+    public ApplicantStatus getStatus() { return status; }
 
     public void addScore(ExamScore score) {
         scores.add(score);
         score.setApplicant(this);
-        recalculateTotal();
     }
-
-    public void recalculateTotal() {
-        this.totalScore = scores.stream().mapToDouble(ExamScore::getScore).sum();
-    }
-
-    public Long getId() { return id; }
-    public String getFullName() { return fullName; }
-    public Faculty getFaculty() { return faculty; }
-    public Double getTotalScore() { return totalScore; }
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
     public List<ExamScore> getScores() { return scores; }
+
+    public double getTotalScore() {
+        return scores.stream()
+                .mapToDouble(ExamScore::getScore) // Беремо всі бали
+                .sum();                           // І додаємо їх
+    }
 }

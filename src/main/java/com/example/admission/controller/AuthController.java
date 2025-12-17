@@ -2,44 +2,46 @@ package com.example.admission.controller;
 
 import com.example.admission.model.User;
 import com.example.admission.repository.UserRepository;
-import com.example.admission.security.JwtUtil;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = "http://localhost:3000")
 public class AuthController {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
 
-    public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
+    public AuthController(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtUtil = jwtUtil;
     }
 
+    // РЕЄСТРАЦІЯ (Повертає створеного юзера)
     @PostMapping("/register")
-    public String register(@RequestBody User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
-        return "User registered successfully!";
+    public ResponseEntity<?> registerUser(@RequestBody User user) {
+        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+            return ResponseEntity.badRequest().body("Error: Username is already taken!");
+        }
+        // За замовчуванням даємо роль USER
+        if (user.getRole() == null) user.setRole("USER");
+
+        User savedUser = userRepository.save(user);
+        return ResponseEntity.ok(savedUser); // <--- ВАЖЛИВО: Повертаємо об'єкт з ID!
     }
 
+    // ВХІД (Новий метод для логіну)
     @PostMapping("/login")
-    public Map<String, String> login(@RequestBody User loginRequest) {
-        User user = userRepository.findByUsername(loginRequest.getUsername())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public ResponseEntity<?> loginUser(@RequestBody User loginRequest) {
+        Optional<User> userOptional = userRepository.findByUsername(loginRequest.getUsername());
 
-        if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            String token = jwtUtil.generateToken(user.getUsername());
-            return Map.of("token", token);
-        } else {
-            throw new RuntimeException("Invalid credentials");
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            // Тут має бути перевірка хешу пароля, але для навчальних цілей порівнюємо як є:
+            if (user.getPassword().equals(loginRequest.getPassword())) {
+                return ResponseEntity.ok(user); // <--- ВАЖЛИВО: Повертаємо юзера з ID
+            }
         }
+        return ResponseEntity.status(401).body("Invalid username or password");
     }
 }
